@@ -1,31 +1,19 @@
-class Chart {
-    constructor(label=[],datasets=[]){
-        this.label=label;
-        this.datasets=datasets;
-    }
-}
 class OwnChart{
-    chr = new Chart();
     constructor(config){
         this.canvas = config.host;
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.type="line";
+        this.label = config.label;
+        this.datasets = config.datasets;
+        this.type;
         this.w=500;
         this.h=500;
-        this.addItem();
         this.render();
-        this.blocks(this.chr.datasets,this.type);
         this.oran;
 
     }
-    addItem(){
-        this.chr =(new Chart(
-            this.label = ["d1","d2","d3","d4"],
-            this.datasets=[["s1", [30,330,400,80],"purple"],["s2",[220,320,80,140],"orange"],["s3", [80,150,400,1000],"red"]]
-        ));
-    }
+
     render(){
         let ara=0;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -57,20 +45,21 @@ class OwnChart{
         this.ctx.moveTo(20,this.h);
         this.ctx.lineTo(20,10);
         this.ctx.stroke();
+        this.blocks();
     }
-    blocks(dataset,type){              
-        if(type=="bar"){
+    blocks(){      
+        if(this.type=="bar"){
             let gen = this.w/this.label.length;
             gen = gen-20;
-            gen = gen/dataset.length;
+            gen = gen/this.datasets.length;
             let bas=20;
-            for(let i=0; i<dataset.length;i++){
+            for(let i=0; i<this.datasets.length;i++){
                 let bass=10;
                 bass = bas+gen*i+bass;
                 this.ctx.save();
                 this.ctx.beginPath();
-                this.ctx.fillStyle=dataset[i][2];
-                dataset[i][1].forEach((s)=>{
+                this.ctx.fillStyle=this.datasets[i][2];
+                this.datasets[i][1].forEach((s)=>{
                     this.ctx.rect(bass, this.h, gen-10, -s/this.oran);
                     bass = bas+ bass +(this.w/this.label.length) ;
                     
@@ -79,27 +68,41 @@ class OwnChart{
                 this.ctx.restore();
             }
         }
-        else if (type=="line"){
+        else if (this.type=="line"){
             let bas;
-            for(let i=0; i<dataset.length;i++){
+            for(let i=0; i<this.datasets.length;i++){
                 bas=30;
                 bas += (this.w/this.label.length) ;
                 bas = bas - this.w/this.label.length/2;
                 this.ctx.save();
                 this.ctx.beginPath();
-                this.ctx.strokeStyle=dataset[i][2];
-                for(let j=0; j<dataset[i][1].length-1;j++){console.log(dataset[i][1][j]*this.oran,dataset[i][1][j+1]*this.oran);
-                    this.ctx.moveTo(bas,this.h-dataset[i][1][j]/this.oran);
+                this.ctx.strokeStyle=this.datasets[i][2];
+                for(let j=0; j<this.datasets[i][1].length-1;j++){
+                    this.ctx.moveTo(bas,this.h-this.datasets[i][1][j]/this.oran);
                     bas += (this.w/this.label.length) ;
-                    this.ctx.lineTo(bas,this.h-dataset[i][1][j+1]/this.oran);
+                    this.ctx.lineTo(bas,this.h-this.datasets[i][1][j+1]/this.oran);
                 }
                 this.ctx.stroke();
                 this.ctx.restore();
             }
         }
+        else{}
         
     }
 }
+Array.from(document.getElementsByClassName("component")).forEach((button) => {
+    button.addEventListener("click", () => {
+        var getSelectedValue = document.querySelector(   
+            'input[name="radio"]:checked');
+            let t = getSelectedValue.getAttribute('data-flow-component');
+            own.type=t;
+            own.render();
+            console.log(own)
+    });
+});
+
 const own = new OwnChart({
-    host: document.getElementById("myBarChart")
+    host: document.getElementById("myBarChart"),
+    label: ["d1","d2","d3","d4"],
+    datasets: [["s1", [30,330,400,80],"purple"],["s2",[220,320,80,140],"orange"],["s3", [80,150,400,1000],"red"]]
 });
